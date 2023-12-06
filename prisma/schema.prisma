@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  User
+  Admin
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  name      String
+  address   String
+  phone     String?
+  role      UserRole  @default(User)
+  posts     Post[]
+  comments  Comment[]
+  likes     Like[]
+  createdat DateTime  @default(now())
+  updatedat DateTime  @default(now())
+}
+
+model Post {
+  id        Int       @id @default(autoincrement())
+  text      String
+  location  String
+  users     User      @relation(fields: [userId], references: [id])
+  userId    Int
+  comments  Comment[]
+  createdat DateTime  @default(now())
+  updatedat DateTime  @default(now())
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  text      String
+  users     User     @relation(fields: [userId], references: [id])
+  userId    Int
+  posts     Post     @relation(fields: [postId], references: [id])
+  postId    Int
+  createdat DateTime @default(now())
+  updatedat DateTime @default(now())
+}
+
+enum LikeScam {
+  Love
+  Like
+  Angery
+  HaHa
+  Care
+  Sad
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  users     User     @relation(fields: [userId], references: [id])
+  userId    Int
+  reaction  LikeScam
+  createdat DateTime
+  updatedat DateTime
+}
